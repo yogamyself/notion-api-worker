@@ -26,7 +26,13 @@ export const getTableData = async (
     notionToken
   );
 
-  const collectionRows = collection.value.schema;
+  let collectionRows = collection.value.schema;
+  if (!collectionRows) {
+    // Fall back to schema from queryCollection response
+    const collectionId = collection.value.id;
+    const tableCollection = table.recordMap.collection?.[collectionId];
+    collectionRows = tableCollection?.value?.schema;
+  }
   if (!collectionRows) {
     return { rows: [], schema: {} };
   }
