@@ -6,7 +6,7 @@ import { createResponse } from "../utils/response.js";
 import { getNotionToken } from "../utils/index.js";
 
 export async function pageRoute(c: HandlerRequest) {
-  const pageId = parsePageId(c.req.param("pageId"));
+  const pageId = parsePageId(c.req.param("pageId")!);
   const notionToken = getNotionToken(c);
 
   const page = await fetchPageById(pageId!, notionToken);
