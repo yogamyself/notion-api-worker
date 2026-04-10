@@ -27,6 +27,9 @@ export const getTableData = async (
   );
 
   const collectionRows = collection.value.schema;
+  if (!collectionRows) {
+    return { rows: [], schema: {} };
+  }
   const collectionColKeys = Object.keys(collectionRows);
 
   const tableArr: RowType[] =
