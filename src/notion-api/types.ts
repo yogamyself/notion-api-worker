@@ -128,21 +128,35 @@ export interface BlockType {
   value: BaseValueType;
 }
 
+export interface RawCollectionType {
+  value: {
+    value: CollectionType["value"];
+    role: string;
+  };
+}
+
+export interface RawCollectionViewType {
+  value: {
+    value: {
+      id: string;
+      type: CollectionViewType;
+    };
+    role: string;
+  };
+}
+
 export interface RecordMapType {
   block: BlockMapType;
   notion_user: {
     [key: string]: NotionUserType;
   };
   collection: {
-    [key: string]: CollectionType;
+    [key: string]: CollectionType | RawCollectionType;
   };
   collection_view: {
-    [key: string]: {
-      value: {
-        id: string;
-        type: CollectionViewType;
-      };
-    };
+    [key: string]:
+      | { value: { id: string; type: CollectionViewType } }
+      | RawCollectionViewType;
   };
 }
 

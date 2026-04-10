@@ -66,7 +66,7 @@ export async function pageRoute(c: HandlerRequest) {
     for (let b of pendingCollections) {
       const collPage = await fetchPageById(b!, notionToken);
 
-      const rawColl = Object.keys(collPage.recordMap.collection).map(
+      const rawColl: any = Object.keys(collPage.recordMap.collection).map(
         (k) => collPage.recordMap.collection[k]
       )[0];
 
@@ -74,9 +74,9 @@ export async function pageRoute(c: HandlerRequest) {
         ? { value: rawColl.value.value }
         : rawColl;
 
-      const rawCollView = Object.keys(collPage.recordMap.collection_view).map(
-        (k) => collPage.recordMap.collection_view[k]
-      )[0];
+      const rawCollView: any = Object.keys(
+        collPage.recordMap.collection_view
+      ).map((k) => collPage.recordMap.collection_view[k])[0];
 
       const collView: {
         value: { id: CollectionType["value"]["id"] };
@@ -99,7 +99,7 @@ export async function pageRoute(c: HandlerRequest) {
           title: coll.value.name,
           schema,
           types: viewIds.map((id) => {
-            const col = collPage.recordMap.collection_view[id];
+            const col: any = collPage.recordMap.collection_view[id];
             return col ? (col.value?.value ?? col.value) : undefined;
           }),
           data: rows,
