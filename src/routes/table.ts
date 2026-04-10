@@ -30,7 +30,7 @@ export const getTableData = async (
   if (!collectionRows) {
     // Fall back to schema from queryCollection response
     const collectionId = collection.value.id;
-    const tableCollection = table.recordMap.collection?.[collectionId];
+    const tableCollection = table.recordMap?.collection?.[collectionId];
     collectionRows = tableCollection?.value?.schema;
   }
   if (!collectionRows) {
@@ -38,10 +38,11 @@ export const getTableData = async (
   }
   const collectionColKeys = Object.keys(collectionRows);
 
-  const tableArr: RowType[] =
-    table.result.reducerResults.collection_group_results.blockIds.map(
-      (id: string) => table.recordMap.block[id]?.value
-    );
+  const blockIds =
+    table.result?.reducerResults?.collection_group_results?.blockIds ?? [];
+  const tableArr: RowType[] = blockIds.map(
+    (id: string) => table.recordMap?.block?.[id]?.value
+  );
 
   const tableData = tableArr.filter(
     (b) =>
@@ -83,15 +84,24 @@ export async function tableRoute(c: HandlerRequest) {
       { headers: {}, statusCode: 401, request: c }
     );
 
-  const collection = Object.keys(page.recordMap.collection).map(
+  const rawCollection = Object.keys(page.recordMap.collection).map(
     (k) => page.recordMap.collection[k]
+  )[0];
+
+  // Handle new Notion API format with double-nested value
+  const collection: CollectionType = rawCollection.value?.value
+    ? { value: rawCollection.value.value }
+    : rawCollection;
+
+  const rawCollectionView = Object.keys(page.recordMap.collection_view).map(
+    (k) => page.recordMap.collection_view[k]
   )[0];
 
   const collectionView: {
     value: { id: CollectionType["value"]["id"] };
-  } = Object.keys(page.recordMap.collection_view).map(
-    (k) => page.recordMap.collection_view[k]
-  )[0];
+  } = rawCollectionView.value?.value
+    ? { value: rawCollectionView.value.value }
+    : rawCollectionView;
 
   const { rows } = await getTableData(
     collection,

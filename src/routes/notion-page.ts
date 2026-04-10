@@ -66,15 +66,23 @@ export async function pageRoute(c: HandlerRequest) {
     for (let b of pendingCollections) {
       const collPage = await fetchPageById(b!, notionToken);
 
-      const coll = Object.keys(collPage.recordMap.collection).map(
+      const rawColl = Object.keys(collPage.recordMap.collection).map(
         (k) => collPage.recordMap.collection[k]
+      )[0];
+
+      const coll: CollectionType = rawColl.value?.value
+        ? { value: rawColl.value.value }
+        : rawColl;
+
+      const rawCollView = Object.keys(collPage.recordMap.collection_view).map(
+        (k) => collPage.recordMap.collection_view[k]
       )[0];
 
       const collView: {
         value: { id: CollectionType["value"]["id"] };
-      } = Object.keys(collPage.recordMap.collection_view).map(
-        (k) => collPage.recordMap.collection_view[k]
-      )[0];
+      } = rawCollView.value?.value
+        ? { value: rawCollView.value.value }
+        : rawCollView;
 
       const { rows, schema } = await getTableData(
         coll,
@@ -92,7 +100,7 @@ export async function pageRoute(c: HandlerRequest) {
           schema,
           types: viewIds.map((id) => {
             const col = collPage.recordMap.collection_view[id];
-            return col ? col.value : undefined;
+            return col ? (col.value?.value ?? col.value) : undefined;
           }),
           data: rows,
         },
